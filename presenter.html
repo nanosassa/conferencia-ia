@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<title>Presenter View · IA: Revolución en el Desarrollo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #0b1020;
+    --bg-2: #0e1530;
+    --surface: #121b38;
+    --border: #243160;
+    --border-soft: #1a2547;
+    --text: #e8edff;
+    --muted: #8a96b8;
+    --dim: #5d6a8e;
+    --accent: #4d8dff;
+    --accent-2: #6ee7ff;
+    --accent-soft: rgba(77, 141, 255, 0.14);
+    --danger: #ff6b6b;
+    --warn: #ffc66e;
+    --ok: #6ee7a8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  }
+
+  .presenter {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto 1fr auto;
+    gap: 0;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* ── Header bar ── */
+  .header {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 32px;
+    background: var(--bg-2);
+    border-bottom: 1px solid var(--border);
+  }
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .slide-counter {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--accent-2);
+    letter-spacing: -0.02em;
+  }
+  .slide-counter .sep { color: var(--dim); margin: 0 6px; font-weight: 400; }
+  .slide-counter .total { color: var(--dim); }
+  .slide-title {
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--text);
+    letter-spacing: 0.02em;
+  }
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+  .timer {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 32px;
+    font-weight: 500;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+  }
+  .timer-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--dim);
+    text-align: right;
+  }
+  .timer-group { text-align: right; }
+  .nav-btns {
+    display: flex;
+    gap: 8px;
+  }
+  .nav-btn {
+    appearance: none;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 16px;
+    padding: 8px 18px;
+    cursor: pointer;
+    transition: background 140ms, border-color 140ms;
+  }
+  .nav-btn:hover {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+  }
+  .nav-btn:active { background: rgba(77, 141, 255, 0.25); }
+  .timer-btn {
+    appearance: none;
+    background: transparent;
+    border: 1px solid var(--border-soft);
+    border-radius: 6px;
+    color: var(--dim);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 4px 10px;
+    cursor: pointer;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: color 140ms, border-color 140ms;
+  }
+  .timer-btn:hover { color: var(--accent-2); border-color: var(--accent); }
+
+  /* ── Main content area ── */
+  .col-notes {
+    padding: 28px 36px;
+    overflow-y: auto;
+    border-right: 1px solid var(--border);
+  }
+  .col-guide {
+    padding: 28px 36px;
+    overflow-y: auto;
+  }
+
+  .col-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .col-label .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+  }
+
+  /* Speaker notes */
+  .notes-timing {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 15px;
+    color: var(--accent-2);
+    background: rgba(110, 231, 255, 0.08);
+    border: 1px solid rgba(110, 231, 255, 0.2);
+    border-radius: 8px;
+    padding: 10px 16px;
+    margin-bottom: 20px;
+    display: inline-block;
+  }
+  .notes-body {
+    font-size: 20px;
+    line-height: 1.65;
+    color: var(--text);
+    max-width: 720px;
+  }
+  .notes-body em {
+    color: var(--accent-2);
+    font-style: normal;
+    font-weight: 500;
+  }
+
+  /* Key points */
+  .key-points {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .key-points li {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    font-size: 19px;
+    line-height: 1.5;
+    color: var(--text);
+  }
+  .key-points .bullet {
+    flex-shrink: 0;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 3px;
+  }
+  .bullet-talk { background: rgba(77, 141, 255, 0.15); color: var(--accent); border: 1px solid rgba(77, 141, 255, 0.3); }
+  .bullet-do { background: rgba(110, 231, 168, 0.12); color: var(--ok); border: 1px solid rgba(110, 231, 168, 0.3); }
+  .bullet-warn { background: rgba(255, 198, 110, 0.12); color: var(--warn); border: 1px solid rgba(255, 198, 110, 0.3); }
+  .bullet-demo { background: rgba(255, 91, 91, 0.12); color: var(--danger); border: 1px solid rgba(255, 91, 91, 0.3); }
+
+  /* Next slide preview */
+  .next-preview {
+    margin-top: 28px;
+    padding: 16px 20px;
+    background: var(--bg-2);
+    border: 1px solid var(--border-soft);
+    border-radius: 10px;
+  }
+  .next-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--dim);
+    margin-bottom: 8px;
+  }
+  .next-title {
+    font-size: 17px;
+    color: var(--muted);
+  }
+
+  /* ── Footer progress ── */
+  .footer-bar {
+    grid-column: 1 / -1;
+    background: var(--bg-2);
+    border-top: 1px solid var(--border);
+    padding: 0;
+    position: relative;
+    height: 6px;
+  }
+  .progress {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    border-radius: 0 3px 3px 0;
+    transition: width 400ms cubic-bezier(.2,.8,.2,1);
+  }
+
+  /* Status dot */
+  .status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .status-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--dim);
+  }
+  .status-dot.connected {
+    background: var(--ok);
+    box-shadow: 0 0 8px var(--ok);
+    animation: pulse-status 2s infinite;
+  }
+  .status-text { color: var(--dim); }
+  .status-dot.connected + .status-text { color: var(--ok); }
+
+  @keyframes pulse-status {
+    0%, 100% { box-shadow: 0 0 4px var(--ok); }
+    50% { box-shadow: 0 0 12px var(--ok); }
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="presenter">
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <div class="slide-counter">
+        <span class="current">01</span><span class="sep">/</span><span class="total">24</span>
+      </div>
+      <div class="slide-title" id="slideTitle">Portada</div>
+      <div class="status">
+        <div class="status-dot" id="statusDot"></div>
+        <div class="status-text" id="statusText">DESCONECTADO</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="nav-btns">
+        <button class="nav-btn" id="btnPrev" title="Anterior (←)">← Anterior</button>
+        <button class="nav-btn" id="btnNext" title="Siguiente (→)">Siguiente →</button>
+      </div>
+      <div class="timer-group">
+        <div class="timer" id="timer">00:00:00</div>
+        <div style="display:flex;gap:6px;margin-top:4px;justify-content:flex-end;">
+          <button class="timer-btn" id="timerToggle">Iniciar</button>
+          <button class="timer-btn" id="timerReset">Reset</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Left column: Speaker notes -->
+  <div class="col-notes" id="colNotes">
+    <div class="col-label"><span class="dot"></span> NOTAS DEL DISERTANTE</div>
+    <div class="notes-timing" id="notesTiming"></div>
+    <div class="notes-body" id="notesBody"></div>
+  </div>
+
+  <!-- Right column: Key points guide -->
+  <div class="col-guide" id="colGuide">
+    <div class="col-label"><span class="dot"></span> PUNTOS CLAVE · QUE HACER</div>
+    <ul class="key-points" id="keyPoints"></ul>
+    <div class="next-preview" id="nextPreview">
+      <div class="next-label">Siguiente slide</div>
+      <div class="next-title" id="nextTitle"></div>
+    </div>
+  </div>
+
+  <!-- Footer progress -->
+  <div class="footer-bar">
+    <div class="progress" id="progress" style="width: 4.17%;"></div>
+  </div>
+</div>
+
+<script>
+const SLIDES = [
+  {
+    title: "Portada",
+    timing: "2 min",
+    section: "APERTURA",
+    points: [
+      { type: "do", text: "Saludá, agradecé estar acá un miércoles a la noche" },
+      { type: "talk", text: "Presentate en una línea: 25 años en la industria, HTML plano hasta liderar equipos" },
+      { type: "talk", text: "Objetivo: que se vayan con criterio, no con prompts mágicos" },
+      { type: "talk", text: "Estructura: 60 min contenido + 45 min Q&A + 3 demos en vivo" },
+      { type: "do", text: "Si tienen preguntas, que las anoten — al final hay tiempo" },
+    ]
+  },
+  {
+    title: "El número que lo dice todo",
+    timing: "3 min",
+    section: "CONTEXTO",
+    points: [
+      { type: "do", text: "Tirá el 92% y dejá un silencio" },
+      { type: "do", text: "Preguntá cuántos usan IA a diario — que prendan cámara o levanten mano" },
+      { type: "talk", text: "Contrastar con el 67% global — estamos atrás pero no tanto" },
+      { type: "warn", text: "Idea fuerza: la IA dejó de ser futurología, está en el flujo de trabajo de todos" },
+    ]
+  },
+  {
+    title: "¿Qué es realmente un LLM?",
+    timing: "3 min",
+    section: "FUNDAMENTOS",
+    points: [
+      { type: "talk", text: "Un LLM es un sistema estadístico, NO un cerebro" },
+      { type: "talk", text: "Se entrenó con millones de líneas y aprendió a predecir el siguiente token" },
+      { type: "warn", text: "Insistir en los 3 puntos: no piensa, no es consciente, pero reconoce patrones a escala masiva" },
+      { type: "talk", text: "Eso lo hace útil Y peligroso a la vez" },
+    ]
+  },
+  {
+    title: "Motor de razonamiento",
+    timing: "3 min",
+    section: "FUNDAMENTOS",
+    points: [
+      { type: "warn", text: "Analogía más importante de la primera parte" },
+      { type: "talk", text: "Google BUSCA, el LLM CONSTRUYE" },
+      { type: "talk", text: "Google no se equivoca pero no resuelve problemas nuevos" },
+      { type: "talk", text: "LLM puede inventar una librería que no existe PERO puede razonar un bug nuevo" },
+      { type: "talk", text: "Hay que entender la diferencia para saber cuándo usar cada uno" },
+    ]
+  },
+  {
+    title: "LLM, Copilot y Agente",
+    timing: "4 min",
+    section: "TAXONOMÍA",
+    points: [
+      { type: "talk", text: "LLM puro: vos hablás, él responde (ChatGPT, Claude, Gemini)" },
+      { type: "talk", text: "Copilot: integrado al editor, sugiere mientras tipeás" },
+      { type: "talk", text: "Agente: le decís qué querés y lo hace solo (Claude Code, Cursor Agent)" },
+      { type: "warn", text: "Cada categoría requiere distinto nivel de criterio del dev" },
+    ]
+  },
+  {
+    title: "Demo: mismo prompt, dos modelos",
+    timing: "5 min",
+    section: "DEMO EN VIVO 01",
+    points: [
+      { type: "demo", text: "Aclarales que es interactivo" },
+      { type: "demo", text: "Correr el MISMO prompt de análisis de código en DOS modelos distintos" },
+      { type: "do", text: "Hacer notar: nivel de detalle, hallazgos de seguridad, tono" },
+      { type: "warn", text: "Mensaje: elegir la herramienta correcta es parte del oficio nuevo" },
+    ]
+  },
+  {
+    title: "El error más común",
+    timing: "3 min",
+    section: "ADVERTENCIA",
+    points: [
+      { type: "warn", text: "Acá CAMBIA el tono — hasta ahora vendiste la IA, ahora viene la advertencia" },
+      { type: "talk", text: "Analogía del gimnasio: pagarle a otro para que levante las pesas" },
+      { type: "do", text: "Preguntá cuántos copiaron código sin entenderlo en el último mes" },
+      { type: "do", text: "Sé honesto vos también — conectá con el público" },
+    ]
+  },
+  {
+    title: "Tutor 24/7",
+    timing: "3 min",
+    section: "USO 1 / 4",
+    points: [
+      { type: "talk", text: "La IA es el tutor más paciente del mundo: no se cansa, no te juzga" },
+      { type: "do", text: "Mostrar el contraste entre los dos prompts en pantalla" },
+      { type: "talk", text: "Prompt MALO → código que funciona pero no creciste" },
+      { type: "talk", text: "Prompt BUENO → entendimiento que queda para siempre" },
+      { type: "do", text: "Anécdota personal opcional: cuándo entendiste algo gracias a una buena explicación" },
+    ]
+  },
+  {
+    title: "Revisor + Boilerplate",
+    timing: "4 min",
+    section: "USOS 2 Y 3 / 4",
+    points: [
+      { type: "talk", text: "Revisor: cuando ya escribiste algo, pedile una segunda opinión" },
+      { type: "talk", text: "No reemplaza el code review humano pero atrapa cosas" },
+      { type: "talk", text: "Boilerplate: estructura de proyecto, tests vacíos, configs" },
+      { type: "warn", text: "SOLO boilerplate de cosas que ya entendés — si no, caés en slide 07" },
+    ]
+  },
+  {
+    title: "Par de debug",
+    timing: "4 min",
+    section: "USO 4 / 4",
+    points: [
+      { type: "talk", text: "Tu uso favorito — mencionalo" },
+      { type: "talk", text: "Describile el problema a la IA como si fuera un compañero" },
+      { type: "warn", text: "Truco: pedir HIPÓTESIS antes que código — forzarla a razonar" },
+      { type: "talk", text: "Ejemplo: stack trace de SQLAlchemy, 3 hipótesis, vos elegís cuál investigar" },
+    ]
+  },
+  {
+    title: "Demo: anatomía de un buen prompt",
+    timing: "5 min",
+    section: "DEMO EN VIVO 02",
+    points: [
+      { type: "demo", text: "Prompt MALO vs prompt BUENO, mismo objetivo, en pantalla" },
+      { type: "do", text: "Que vean la diferencia de output en vivo" },
+      { type: "warn", text: "Repetir la FÓRMULA 3 veces: contexto + tecnología + objetivo + criterio" },
+      { type: "talk", text: "Si solo se acuerdan de UNA cosa, que sea esta fórmula" },
+    ]
+  },
+  {
+    title: "Reglas 1 y 2",
+    timing: "4 min",
+    section: "REGLAS DE ORO",
+    points: [
+      { type: "warn", text: "ROJA: nunca pegar código que no entendés — leer línea por línea" },
+      { type: "warn", text: "AMARILLA: alucinaciones — la IA inventa funciones, librerías, parámetros" },
+      { type: "talk", text: "Especialmente en frameworks menos populares" },
+      { type: "do", text: "Siempre verificar contra docs oficiales antes de pegar" },
+    ]
+  },
+  {
+    title: "Regla 3 — Datos sensibles",
+    timing: "4 min",
+    section: "REGLA 3 / 4",
+    points: [
+      { type: "talk", text: "Corregir algo que se dice mucho y MAL" },
+      { type: "talk", text: "NO es cierto que todo entrena al modelo — planes business/API no usan datos" },
+      { type: "warn", text: "PERO las políticas cambian por plan, plataforma y fecha" },
+      { type: "warn", text: "Regla práctica: tratá lo que subís como si fuera PÚBLICO" },
+      { type: "talk", text: "Si no lo dirías en una conferencia, no se lo des a la IA" },
+    ]
+  },
+  {
+    title: "Regla 4 — Versiones",
+    timing: "3 min",
+    section: "REGLA 4 / 4",
+    points: [
+      { type: "talk", text: "Nueva en 2026 y la sufrimos todos" },
+      { type: "talk", text: "La IA te puede tirar sintaxis de una versión vieja" },
+      { type: "do", text: "Solución: poner SIEMPRE la versión exacta en el prompt" },
+      { type: "talk", text: "Ejemplos: Python 3.12, FastAPI 0.115, .NET 9 con C# 13" },
+      { type: "talk", text: "No es paranoia — es ahorrarte una hora de debug" },
+    ]
+  },
+  {
+    title: "El nuevo ciclo de desarrollo",
+    timing: "4 min",
+    section: "CAMBIO DE CICLO",
+    points: [
+      { type: "do", text: "Mostrar el visual comparativo Antes vs Ahora" },
+      { type: "talk", text: "Antes: escribir + debuggear. Ahora: revisar + decidir" },
+      { type: "warn", text: "El 80% del tiempo ahora está en revisión — este dato choca a los experimentados" },
+      { type: "talk", text: "El skill que más subió: no es escribir código, es LEERLO" },
+    ]
+  },
+  {
+    title: "Agentic AI",
+    timing: "4 min",
+    section: "EL SALTO",
+    points: [
+      { type: "talk", text: "El salto cualitativo de 2025-2026" },
+      { type: "talk", text: "Un agente no responde, EJECUTA: lee codebase, planifica, edita, corre tests, corrige" },
+      { type: "talk", text: "El dev pasa de tipear a especificar y validar" },
+      { type: "do", text: "Ejemplo concreto: 'refactorizá toda la capa de auth para JWT' → vuelve con un PR" },
+    ]
+  },
+  {
+    title: "Vibe coding",
+    timing: "4 min",
+    section: "TENDENCIA",
+    points: [
+      { type: "talk", text: "Término viral — programar conversando, sin tocar código directamente" },
+      { type: "talk", text: "Genial para prototipos, demos, MVPs" },
+      { type: "warn", text: "Sin criterio genera 'slop' — código que parece andar pero tiene agujeros" },
+      { type: "warn", text: "Mensaje: la velocidad sin criterio es un RIESGO, no una ventaja" },
+    ]
+  },
+  {
+    title: "Habilidades que cambiaron de valor",
+    timing: "4 min",
+    section: "MERCADO",
+    points: [
+      { type: "talk", text: "Esta tabla la imprimí y la tengo pegada al monitor — mencionalo" },
+      { type: "talk", text: "SUBIERON: leer código ajeno, systems thinking, testing, prompting" },
+      { type: "talk", text: "BAJARON: memorizar APIs, escribir CRUDs, tareas mecánicas" },
+      { type: "warn", text: "Si tu valor estaba en lo segundo, es momento de invertir en lo primero" },
+    ]
+  },
+  {
+    title: "El dev como supervisor",
+    timing: "3 min",
+    section: "TESIS",
+    points: [
+      { type: "warn", text: "CITA CENTRAL: el junior con criterio + IA compite con semi-seniors que la rechazan" },
+      { type: "talk", text: "El mercado lo está empezando a notar" },
+      { type: "warn", text: "Tu valor en 2026: saber distinguir lo que está bien de lo que PARECE estar bien" },
+      { type: "talk", text: "Es lo único que la IA todavía no hace sola" },
+    ]
+  },
+  {
+    title: "Ecosistema de herramientas",
+    timing: "4 min",
+    section: "MAPA",
+    points: [
+      { type: "talk", text: "Mapa rápido para que sepan qué probar el lunes" },
+      { type: "talk", text: "ChatGPT / Gemini → conceptos. Claude → análisis profundo y code review" },
+      { type: "talk", text: "Copilot → editor, gratis para estudiantes. Cursor → editor pensado para IA" },
+      { type: "talk", text: "Claude Code → proyectos enteros, ya con criterio formado" },
+      { type: "do", text: "Mencioná que Claude es lo que más usás vos" },
+    ]
+  },
+  {
+    title: "Demo: Copilot en el editor",
+    timing: "5 min",
+    section: "DEMO EN VIVO 03",
+    points: [
+      { type: "demo", text: "Abrir VS Code con Copilot activo" },
+      { type: "demo", text: "Escribir algo desde cero, mostrar sugerencias cambiando con el contexto" },
+      { type: "warn", text: "La calidad depende del contexto: archivos abiertos, comentarios, nombres" },
+      { type: "talk", text: "Cuanto mejor escribís, mejor te ayuda. La IA amplifica lo que ya sos." },
+    ]
+  },
+  {
+    title: "MCP: el USB-C de la IA",
+    timing: "4 min",
+    section: "INFRAESTRUCTURA",
+    points: [
+      { type: "talk", text: "Territorio nuevo — Model Context Protocol" },
+      { type: "talk", text: "Estándar abierto: cualquier IA se conecta a herramientas externas" },
+      { type: "warn", text: "ANALOGÍA: el USB-C de la IA — lo escribís una vez, funciona en todos los clientes" },
+      { type: "talk", text: "Antes: integración custom por cada IA. Ahora: un server MCP → todos" },
+      { type: "do", text: "Ejemplos: base de datos, Slack, Jira, CI/CD, APIs internas" },
+      { type: "warn", text: "Es infraestructura, no hype. Si les preguntan en una entrevista, que sepan explicarlo" },
+    ]
+  },
+  {
+    title: "Skills: tu criterio, exportable",
+    timing: "4 min",
+    section: "ESCALANDO CRITERIO",
+    points: [
+      { type: "talk", text: "Complementa MCP — un skill es un workflow empaquetado" },
+      { type: "talk", text: "No es un prompt suelto, es una metodología codificada paso a paso" },
+      { type: "do", text: "Ejemplo: skill de TDD → test primero, implementación, refactor" },
+      { type: "do", text: "Ejemplo: skill de debugging → hipótesis antes de tocar código" },
+      { type: "warn", text: "Escalan criterio: junior con buenos skills = disciplina de senior" },
+      { type: "talk", text: "Hay rígidos (TDD, debugging) y flexibles (patrones, convenciones)" },
+      { type: "warn", text: "Mensaje final: tu experiencia es exportable — la codificás y la distribuís" },
+    ]
+  },
+  {
+    title: "Cierre + Q&A",
+    timing: "3 min + 45 min Q&A",
+    section: "CIERRE",
+    points: [
+      { type: "talk", text: "Frase 1: Usarla para aprender a pensar, no para dejar de pensar" },
+      { type: "talk", text: "Frase 2: La IA es el multiplicador, vos sos el factor — si es cero, da cero" },
+      { type: "talk", text: "Frase 3: La herramienta no reemplaza al que sabe usarla con criterio" },
+      { type: "do", text: "Abrir Q&A pidiendo preguntas concretas: casos puntuales, dudas técnicas" },
+      { type: "do", text: "Tienen 45 minutos — no apurarse" },
+    ]
+  },
+];
+
+const NOTES = [
+  "Bienvenida (2 min). Saluden, agradezcan estar acá un miércoles a la noche. Presento quién soy en una línea: 25 años en la industria, desde hacer páginas en HTML plano hasta liderar equipos hoy. La idea de esta clase es que se vayan con criterio, no con una lista de prompts mágicos. Anticipen la estructura: 60 minutos de contenido, 45 de Q&A, y tres demos en vivo. Si tienen preguntas durante la charla, anótenlas; al final hay tiempo para todas.",
+  "Apertura con datos (3 min). Tiren el número de 92% y dejen un silencio. Pregunten en serio cuántos la usan a diario; pidan que prendan cámara o levanten mano virtual. Contrasten con el 67% global para mostrar que estamos atrás pero no tanto. Cierren con la idea fuerza: la IA dejó de ser tema de futurología, está en el flujo de trabajo de prácticamente todos los devs profesionales hoy.",
+  "Definición clara (3 min). Antes de hablar de cómo usarla hay que entender qué es. Expliquen: un LLM es un sistema estadístico, no un cerebro. Se entrenó con millones de líneas de texto y código y aprendió a predecir el siguiente token. Insistan en los tres puntos: no piensa, no es consciente, pero reconoce patrones a una escala que ningún humano podría. Eso es lo que lo hace útil y peligroso a la vez.",
+  "Motor de razonamiento (3 min). Esta es la analogía más importante de la primera parte. Google busca, el LLM construye. Por eso Google no se equivoca pero tampoco resuelve problemas nuevos; el LLM puede inventar una librería que no existe pero también puede razonar sobre un bug que nadie vio antes. Tienen que entender la diferencia para saber cuándo usar cada uno.",
+  "Tres categorías (4 min). Esta tabla la van a ver mucho de acá en adelante. LLM puro: vos hablás, él responde. Copilot: integrado al editor, sugiere mientras tipeás. Agente: le decís qué querés y él va y lo hace, abre archivos, corre tests, itera. Cada categoría requiere distinto nivel de criterio del dev. Más adelante volvemos a esto.",
+  "Demo en vivo 1 (5 min). Aclaren que es interactivo. Tomen el mismo prompt sobre análisis de código y seguridad y córranlo en dos modelos distintos —usen los que tengan abiertos—. Hagan notar las diferencias: nivel de detalle, qué problemas detecta cada uno, cuál es más conservador. Mensaje de cierre: elegir la herramienta correcta es parte del oficio nuevo.",
+  "Punto de inflexión (3 min). Acá cambia el tono. Hasta ahora vendí la IA, ahora viene la advertencia. Usen la analogía del gimnasio con energía, es la que más se les va a quedar. Preguntenle al público cuántos copiaron código sin entenderlo en el último mes. Sean honestos ustedes también.",
+  "Tutor (3 min). Primer uso saludable. La IA es el tutor más paciente del mundo: no se cansa, no te juzga. Mostrales el contraste entre los dos prompts. El malo te da código que funciona pero vos no creciste. El bueno te da entendimiento que te queda para siempre. Anécdota personal opcional: cuándo entendieron algo gracias a una explicación bien pedida.",
+  "Revisor + Boilerplate (4 min). Dos usos que se llevan bien. Revisor: cuando ya escribiste algo, pedile una segunda opinión. No reemplaza el code review humano pero atrapa cosas. Boilerplate: estructura de proyecto, tests vacíos, configs. Cosas que sabés hacer pero te aburre. Aclaración: solo boilerplate de cosas que ya entendés, si no caés en el problema del slide 7.",
+  "Par de debug (4 min). Mi uso favorito. Cuando estás trabado dos horas, en vez de buscar en Stack Overflow, describile el problema a la IA como si fuera un compañero. El truco está en pedir hipótesis antes que código —forzarla a razonar, no a tirar parches—. Ejemplo concreto: el stack trace de SQLAlchemy. Tres hipótesis y vos elegís cuál investigar primero.",
+  "Demo en vivo 2 (5 min). Prompt malo vs prompt bueno con el mismo objetivo. Que vean en pantalla la diferencia de output. La fórmula: contexto + tecnología + objetivo + criterio. Repetilan tres veces. Es la única receta que se llevan hoy si solo se acuerdan de una cosa.",
+  "Reglas 1 y 2 (4 min). Roja: no peguen código que no entienden. Lean línea por línea aunque sean cinco minutos más. Amarilla: alucinaciones. La IA inventa funciones, librerías, parámetros que no existen. Especialmente en frameworks menos populares. Verifiquen siempre contra docs oficiales antes de pegar.",
+  "Regla 3, mito (4 min). Acá corregimos algo que se dice mucho y mal. No es cierto que todo lo que subís entrena al modelo —en planes business, API y muchos planes pagos no se usa para entrenamiento—. Pero las políticas cambian, varían por plan y por país. La regla práctica que cubre todos los casos: tratá lo que subís como si fuera público. Si no lo dirías en una conferencia, no se lo des a la IA.",
+  "Regla 4, versiones (3 min). Esta es nueva en 2026 y la sufrimos todos. La IA fue entrenada con un corte de fecha y muchas veces te tira sintaxis vieja. Solución: poné la versión exacta en el prompt. Python 3.12, FastAPI 0.115, .NET 9 con C# 13. No es paranoia, es ahorrarte una hora de debug.",
+  "Cambio de ciclo (4 min). Visual comparativo. Antes el tiempo se iba en escribir y debuggear. Ahora se va en revisar y decidir. Ese 80% en revisión es el dato que más choca a los más experimentados. El skill que más subió de valor en cinco años no es escribir código, es leerlo.",
+  "Agentic AI (4 min). El salto cualitativo de 2025-2026. Un agente no responde, ejecuta. Lee tu codebase, planifica, edita varios archivos, corre tests, ve si rompió algo, corrige. El dev pasa de tipear a especificar y validar. Ejemplo concreto: pedirle 'refactorizá toda la capa de auth para usar JWT' y que vuelva con un PR completo.",
+  "Vibe coding (4 min). Término que se hizo viral. La idea: programar conversando, sin tocar el código directamente. Es genial para prototipos, demos, MVPs. Es desastroso sin criterio: aparece el slop, código que parece andar pero tiene agujeros. Mensaje: la velocidad sin criterio es un riesgo, no una ventaja.",
+  "Skills (4 min). Esta tabla la imprimí y la tengo pegada al monitor. Subieron: leer código ajeno, pensar en sistemas, escribir buenos tests, prompting como skill formal. Bajaron: memorizar APIs, escribir CRUDs, tareas mecánicas. Si tu valor estaba en lo segundo, es momento de invertir en lo primero.",
+  "Supervisor (3 min). Cita central. El junior con criterio + IA hoy compite con perfiles más senior que la rechazan. El mercado lo está empezando a notar. Tu valor en 2026 no es saber un framework, es saber distinguir lo que está bien de lo que parece estar bien. Eso es lo único que la IA todavía no hace sola.",
+  "Ecosistema (4 min). Mapa rápido para que sepan qué probar el lunes. ChatGPT y Gemini para conceptos. Claude para análisis profundo y revisión de código —es lo que más uso yo—. Copilot integrado al editor desde el día uno, gratis para estudiantes. Cursor si querés un editor pensado para IA. Claude Code para proyectos enteros, ya con criterio formado.",
+  "Demo en vivo 3 (5 min). Abran VS Code con Copilot activo. Escriban algo simple, dejen que sugiera, acepten, modifiquen. El punto: la calidad de la sugerencia depende del contexto que ven —archivos abiertos, comentarios, nombres de variables—. Cuanto mejor escribís, mejor te ayuda. La IA amplifica lo que ya sos.",
+  "MCP (4 min). Acá entramos en territorio nuevo. MCP es Model Context Protocol, un estándar abierto que permite que cualquier IA se conecte a herramientas externas: tu base de datos, Slack, Jira, tu CI/CD, APIs internas. La analogía que más funciona: es el USB-C de la IA. Antes cada herramienta necesitaba su integración propia, ahora escribís un servidor MCP una vez y cualquier cliente compatible lo usa. Esto es infraestructura, no hype. El dev que aprende a armar un MCP server hoy le da superpoderes a todo su equipo mañana. Si les preguntan en una entrevista qué es MCP, que puedan explicarlo.",
+  "Skills (4 min). Esto complementa lo anterior. Un skill es un workflow empaquetado: instrucciones reutilizables que le dicen al agente cómo hacer algo paso a paso. No es un prompt suelto, es una metodología codificada. Ejemplo: un skill de TDD le dice al agente que escriba el test primero, después la implementación, después refactorice. Un skill de debugging le dice que genere hipótesis antes de tocar código. La gracia: escalan el criterio del equipo. Un junior con buenos skills trabaja con la disciplina de un senior porque el skill codifica esa experiencia. Hay rígidos que se siguen al pie de la letra y flexibles que se adaptan al contexto. Mensaje final: tu experiencia ahora es exportable, la codificás y la distribuís.",
+  "Cierre (3 min). Tres frases para llevarse. Usarla para aprender, no para dejar de pensar. La IA es el multiplicador, vos sos el factor —si el factor es cero, da cero—. La herramienta no reemplaza al que sabe usarla con criterio. Abren Q&A pidiendo preguntas concretas: cómo la uso yo, casos puntuales, dudas técnicas. Tienen 45 minutos.",
+];
+
+const BULLET_ICONS = {
+  talk: { cls: 'bullet-talk', icon: '▸' },
+  do:   { cls: 'bullet-do',   icon: '◆' },
+  warn: { cls: 'bullet-warn', icon: '!' },
+  demo: { cls: 'bullet-demo', icon: '●' },
+};
+
+// ── State ──
+let currentIndex = 0;
+let timerRunning = false;
+let timerStart = null;
+let timerElapsed = 0;
+let timerInterval = null;
+
+// ── DOM refs ──
+const counterCurrent = document.querySelector('.slide-counter .current');
+const counterTotal = document.querySelector('.slide-counter .total');
+const slideTitleEl = document.getElementById('slideTitle');
+const statusDot = document.getElementById('statusDot');
+const statusText = document.getElementById('statusText');
+const notesTimingEl = document.getElementById('notesTiming');
+const notesBodyEl = document.getElementById('notesBody');
+const keyPointsEl = document.getElementById('keyPoints');
+const nextTitleEl = document.getElementById('nextTitle');
+const nextPreviewEl = document.getElementById('nextPreview');
+const progressEl = document.getElementById('progress');
+const timerEl = document.getElementById('timer');
+const colNotesEl = document.getElementById('colNotes');
+const colGuideEl = document.getElementById('colGuide');
+
+// ── Render ──
+function render(index) {
+  currentIndex = index;
+  const slide = SLIDES[index];
+  const note = NOTES[index] || '';
+
+  // Header
+  counterCurrent.textContent = String(index + 1).padStart(2, '0');
+  counterTotal.textContent = String(SLIDES.length);
+  slideTitleEl.textContent = slide.title;
+
+  // Notes
+  notesTimingEl.textContent = `⏱ ${slide.timing}  ·  ${slide.section}`;
+
+  // Format note text: highlight text between em dashes and key phrases
+  const formatted = note
+    .replace(/—([^—]+)—/g, '<em>—$1—</em>')
+    .replace(/(no piensa|no es consciente|no se equivoca|no busca|construye|criterio|hipótesis|verificar|verificá|público|versión exacta|contexto \+ tecnología \+ objetivo \+ criterio|la fórmula|USB-C|exportable)/gi, '<em>$1</em>');
+  notesBodyEl.innerHTML = formatted;
+
+  // Key points
+  keyPointsEl.innerHTML = '';
+  slide.points.forEach(p => {
+    const li = document.createElement('li');
+    const b = BULLET_ICONS[p.type] || BULLET_ICONS.talk;
+    li.innerHTML = `<span class="bullet ${b.cls}">${b.icon}</span><span>${p.text}</span>`;
+    keyPointsEl.appendChild(li);
+  });
+
+  // Next preview
+  if (index < SLIDES.length - 1) {
+    nextPreviewEl.style.display = '';
+    const next = SLIDES[index + 1];
+    nextTitleEl.textContent = `${String(index + 2).padStart(2, '0')} — ${next.title}  (${next.timing})`;
+  } else {
+    nextPreviewEl.style.display = 'none';
+  }
+
+  // Progress
+  const pct = ((index + 1) / SLIDES.length) * 100;
+  progressEl.style.width = pct + '%';
+
+  // Scroll to top
+  colNotesEl.scrollTop = 0;
+  colGuideEl.scrollTop = 0;
+}
+
+// ── Timer ──
+function formatTime(ms) {
+  const s = Math.floor(ms / 1000);
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+}
+
+function updateTimer() {
+  const now = Date.now();
+  const total = timerElapsed + (timerRunning ? now - timerStart : 0);
+  timerEl.textContent = formatTime(total);
+}
+
+document.getElementById('timerToggle').addEventListener('click', () => {
+  if (timerRunning) {
+    timerElapsed += Date.now() - timerStart;
+    timerRunning = false;
+    clearInterval(timerInterval);
+    document.getElementById('timerToggle').textContent = 'Continuar';
+  } else {
+    timerStart = Date.now();
+    timerRunning = true;
+    timerInterval = setInterval(updateTimer, 1000);
+    updateTimer();
+    document.getElementById('timerToggle').textContent = 'Pausar';
+  }
+});
+
+document.getElementById('timerReset').addEventListener('click', () => {
+  timerElapsed = 0;
+  timerStart = Date.now();
+  updateTimer();
+});
+
+// ── Navigation (local + broadcast) ──
+const bc = new BroadcastChannel('deck-presenter');
+
+function goNext() { bc.postMessage({ type: 'nav-next' }); }
+function goPrev() { bc.postMessage({ type: 'nav-prev' }); }
+
+document.getElementById('btnNext').addEventListener('click', goNext);
+document.getElementById('btnPrev').addEventListener('click', goPrev);
+
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); goNext(); }
+  else if (e.key === 'ArrowLeft') { e.preventDefault(); goPrev(); }
+});
+
+// ── Sync ──
+let connected = false;
+
+bc.addEventListener('message', (e) => {
+  if (e.data.type === 'slidechange') {
+    if (!connected) {
+      connected = true;
+      statusDot.classList.add('connected');
+      statusText.textContent = 'SINCRONIZADO';
+    }
+    render(e.data.index);
+  }
+});
+
+// Request current state on load
+bc.postMessage({ type: 'request-sync' });
+
+// If no response in 2s, show first slide anyway
+setTimeout(() => {
+  if (!connected) render(0);
+}, 2000);
+
+// Initial render
+render(0);
+</script>
+</body>
+</html>

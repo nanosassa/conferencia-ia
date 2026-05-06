@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<title>IA: Revolución en el Desarrollo · Rinaldo Sassaroli</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<script type="application/json" id="speaker-notes">
+[
+"Bienvenida (2 min). Saluden, agradezcan estar acá un miércoles a la noche. Presento quién soy en una línea: 25 años en la industria, desde hacer páginas en HTML plano hasta liderar equipos hoy. La idea de esta clase es que se vayan con criterio, no con una lista de prompts mágicos. Anticipen la estructura: 60 minutos de contenido, 45 de Q&A, y tres demos en vivo. Si tienen preguntas durante la charla, anótenlas; al final hay tiempo para todas.",
+"Apertura con datos (3 min). Tiren el número de 92% y dejen un silencio. Pregunten en serio cuántos la usan a diario; pidan que prendan cámara o levanten mano virtual. Contrasten con el 67% global para mostrar que estamos atrás pero no tanto. Cierren con la idea fuerza: la IA dejó de ser tema de futurología, está en el flujo de trabajo de prácticamente todos los devs profesionales hoy.",
+"Definición clara (3 min). Antes de hablar de cómo usarla hay que entender qué es. Expliquen: un LLM es un sistema estadístico, no un cerebro. Se entrenó con millones de líneas de texto y código y aprendió a predecir el siguiente token. Insistan en los tres puntos: no piensa, no es consciente, pero reconoce patrones a una escala que ningún humano podría. Eso es lo que lo hace útil y peligroso a la vez.",
+"Motor de razonamiento (3 min). Esta es la analogía más importante de la primera parte. Google busca, el LLM construye. Por eso Google no se equivoca pero tampoco resuelve problemas nuevos; el LLM puede inventar una librería que no existe pero también puede razonar sobre un bug que nadie vio antes. Tienen que entender la diferencia para saber cuándo usar cada uno.",
+"Tres categorías (4 min). Esta tabla la van a ver mucho de acá en adelante. LLM puro: vos hablás, él responde. Copilot: integrado al editor, sugiere mientras tipeás. Agente: le decís qué querés y él va y lo hace, abre archivos, corre tests, itera. Cada categoría requiere distinto nivel de criterio del dev. Más adelante volvemos a esto.",
+"Demo en vivo 1 (5 min). Aclaren que es interactivo. Tomen el mismo prompt sobre análisis de código y séguridad y córranlo en dos modelos distintos —usen los que tengan abiertos—. Hagan notar las diferencias: nivel de detalle, qué problemas detecta cada uno, cuál es más conservador. Mensaje de cierre: elegir la herramienta correcta es parte del oficio nuevo.",
+"Punto de inflexión (3 min). Acá cambia el tono. Hasta ahora vendí la IA, ahora viene la advertencia. Usen la analogía del gimnasio con energía, es la que más se les va a quedar. Preguntenle al público cuántos copiaron código sin entenderlo en el último mes. Sean honestos ustedes también.",
+"Tutor (3 min). Primer uso saludable. La IA es el tutor más paciente del mundo: no se cansa, no te juzga. Mostrales el contraste entre los dos prompts. El malo te da código que funciona pero vos no creciste. El bueno te da entendimiento que te queda para siempre. Anécdota personal opcional: cuándo entendieron algo gracias a una explicación bien pedida.",
+"Revisor + Boilerplate (4 min). Dos usos que se llevan bien. Revisor: cuando ya escribiste algo, pedile una segunda opinión. No reemplaza el code review humano pero atrapa cosas. Boilerplate: estructura de proyecto, tests vacíos, configs. Cosas que sabés hacer pero te aburre. Aclaración: solo boilerplate de cosas que ya entendés, si no caés en el problema del slide 7.",
+"Par de debug (4 min). Mi uso favorito. Cuando estás trabado dos horas, en vez de buscar en Stack Overflow, describile el problema a la IA como si fuera un compañero. El truco está en pedir hipótesis antes que código —forzarla a razonar, no a tirar parches—. Ejemplo concreto: el stack trace de SQLAlchemy. Tres hipótesis y vos elegís cuál investigar primero.",
+"Demo en vivo 2 (5 min). Promp malo vs prompt bueno con el mismo objetivo. Que vean en pantalla la diferencia de output. La fórmula: contexto + tecnología + objetivo + criterio. Repetilan tres veces. Es la única receta que se llevan hoy si solo se acuerdan de una cosa.",
+"Reglas 1 y 2 (4 min). Roja: no peguen código que no entienden. Lean línea por línea aunque sean cinco minutos más. Amarilla: alucinaciones. La IA inventa funciones, librerías, parámetros que no existen. Especialmente en frameworks menos populares. Verifiquen siempre contra docs oficiales antes de pegar.",
+"Regla 3, mito (4 min). Acá corregimos algo que se dice mucho y mal. No es cierto que todo lo que subís entrena al modelo —en planes business, API y muchos planes pagos no se usa para entrenamiento—. Pero las políticas cambian, varían por plan y por país. La regla práctica que cubre todos los casos: tratá lo que subís como si fuera público. Si no lo dirías en una conferencia, no se lo des a la IA.",
+"Regla 4, versiones (3 min). Esta es nueva en 2026 y la sufrimos todos. La IA fue entrenada con un corte de fecha y muchas veces te tira sintaxis vieja. Solución: poné la versión exacta en el prompt. Python 3.12, FastAPI 0.115, .NET 9 con C# 13. No es paranoia, es ahorrarte una hora de debug.",
+"Cambio de ciclo (4 min). Visual comparativo. Antes el tiempo se iba en escribir y debuggear. Ahora se va en revisar y decidir. Ese 80% en revisión es el dato que más choca a los más experimentados. El skill que más subió de valor en cinco años no es escribir código, es leerlo.",
+"Agentic AI (4 min). El salto cualitativo de 2025-2026. Un agente no responde, ejecuta. Lee tu codebase, planifica, edita varios archivos, corre tests, ve si rompió algo, corrige. El dev pasa de tipear a especificar y validar. Ejemplo concreto: pedirle 'refactorizá toda la capa de auth para usar JWT' y que vuelva con un PR completo.",
+"Vibe coding (4 min). Término que se hizo viral. La idea: programar conversando, sin tocar el código directamente. Es genial para prototipos, demos, MVPs. Es desastroso sin criterio: aparece el slop, código que parece andar pero tiene agujeros. Mensaje: la velocidad sin criterio es un riesgo, no una ventaja.",
+"Skills (4 min). Esta tabla la imprimí y la tengo pegada al monitor. Subieron: leer código ajeno, pensar en sistemas, escribir buenos tests, prompting como skill formal. Bajaron: memorizar APIs, escribir CRUDs, tareas mecánicas. Si tu valor estaba en lo segundo, es momento de invertir en lo primero.",
+"Supervisor (3 min). Cita central. El junior con criterio + IA hoy compite con perfiles más senior que la rechazan. El mercado lo está empezando a notar. Tu valor en 2026 no es saber un framework, es saber distinguir lo que está bien de lo que parece estar bien. Eso es lo único que la IA todavía no hace sola.",
+"Ecosistema (4 min). Mapa rápido para que sepan qué probar el lunes. ChatGPT y Gemini para conceptos. Claude para análisis profundo y revisión de código —es lo que más uso yo—. Copilot integrado al editor desde el día uno, gratis para estudiantes. Cursor si querés un editor pensado para IA. Claude Code para proyectos enteros, ya con criterio formado.",
+"Demo en vivo 3 (5 min). Abran VS Code con Copilot activo. Escriban algo simple, dejen que sugiera, acepten, modifiquen. El punto: la calidad de la sugerencia depende del contexto que ven —archivos abiertos, comentarios, nombres de variables—. Cuanto mejor escribís, mejor te ayuda. La IA amplifica lo que ya sos.",
+"MCP (4 min). Acá entramos en territorio nuevo. MCP es Model Context Protocol, un estándar abierto que permite que cualquier IA se conecte a herramientas externas: tu base de datos, Slack, Jira, tu CI/CD, APIs internas. La analogía que más funciona: es el USB-C de la IA. Antes cada herramienta necesitaba su integración propia, ahora escribís un servidor MCP una vez y cualquier cliente compatible lo usa. Esto es infraestructura, no hype. El dev que aprende a armar un MCP server hoy le da superpoderes a todo su equipo mañana. Si les preguntan en una entrevista qué es MCP, que puedan explicarlo.",
+"Skills (4 min). Esto complementa lo anterior. Un skill es un workflow empaquetado: instrucciones reutilizables que le dicen al agente cómo hacer algo paso a paso. No es un prompt suelto, es una metodología codificada. Ejemplo: un skill de TDD le dice al agente que escriba el test primero, después la implementación, después refactorice. Un skill de debugging le dice que genere hipótesis antes de tocar código. La gracia: escalan el criterio del equipo. Un junior con buenos skills trabaja con la disciplina de un senior porque el skill codifica esa experiencia. Hay rígidos que se siguen al pie de la letra y flexibles que se adaptan al contexto. Mensaje final: tu experiencia ahora es exportable, la codificás y la distribuís.",
+"Cierre (3 min). Tres frases para llevarse. Usarla para aprender, no para dejar de pensar. La IA es el multiplicador, vos sos el factor —si el factor es cero, da cero—. La herramienta no reemplaza al que sabe usarla con criterio. Abren Q&A pidiendo preguntas concretas: cómo la uso yo, casos puntuales, dudas técnicas. Tienen 45 minutos."
+]
+</script>
+<style>
+  :root {
+    --bg: #0b1020;
+    --bg-2: #0e1530;
+    --surface: #121b38;
+    --surface-2: #182446;
+    --border: #243160;
+    --border-soft: #1a2547;
+    --text: #e8edff;
+    --muted: #8a96b8;
+    --dim: #5d6a8e;
+    --accent: #4d8dff;
+    --accent-2: #6ee7ff;
+    --accent-soft: rgba(77, 141, 255, 0.14);
+    --danger: #ff6b6b;
+    --warn: #ffc66e;
+    --ok: #6ee7a8;
+  }
+  html, body { margin: 0; padding: 0; background: #000; }
+  body { font-family: 'IBM Plex Sans', system-ui, sans-serif; color: var(--text); }
+  deck-stage { background: #000; }
+  section.slide {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', system-ui, sans-serif;
+    overflow: hidden;
+    position: relative;
+  }
+  /* Subtle grid texture overlay used on most slides */
+  .slide::before {
+    content: "";
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(77,141,255,0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(77,141,255,0.045) 1px, transparent 1px);
+    background-size: 80px 80px;
+    pointer-events: none;
+    mask-image: radial-gradient(ellipse at 50% 40%, black 30%, transparent 80%);
+  }
+  .slide-inner {
+    position: relative;
+    width: 100%; height: 100%;
+    padding: 100px 100px 80px 100px;
+    box-sizing: border-box;
+    display: flex; flex-direction: column;
+    z-index: 1;
+  }
+  /* Slide chrome — top label + page number */
+  .chrome {
+    position: absolute;
+    top: 48px; left: 100px; right: 100px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 16px;
+    color: var(--dim);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    z-index: 2;
+  }
+  .chrome .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); display: inline-block; margin-right: 12px; vertical-align: middle; box-shadow: 0 0 12px var(--accent); }
+
+  /* Typography */
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px;
+    color: var(--accent-2);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin: 0 0 28px 0;
+  }
+  h1.title {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight: 600;
+    font-size: 64px;
+    line-height: 1.08;
+    margin: 0 0 52px 0;
+    letter-spacing: -0.01em;
+    color: var(--text);
+  }
+  h1.title .accent { color: var(--accent-2); }
+  .subtitle {
+    font-size: 36px;
+    line-height: 1.35;
+    color: var(--muted);
+    font-weight: 400;
+    margin: 0;
+    max-width: 1500px;
+  }
+  .body { font-size: 34px; line-height: 1.45; color: var(--text); margin: 0; }
+  .body-muted { font-size: 34px; line-height: 1.45; color: var(--muted); margin: 0; }
+  .small { font-size: 28px; line-height: 1.4; color: var(--muted); margin: 0; }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+
+  /* Common helpers */
+  .stack-l { display: flex; flex-direction: column; gap: 28px; }
+  .stack-xl { display: flex; flex-direction: column; gap: 52px; }
+  .row { display: flex; gap: 28px; }
+  .grow { flex: 1; }
+  .footer {
+    position: absolute; left: 100px; right: 100px; bottom: 48px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 16px; color: var(--dim);
+    letter-spacing: 0.1em; text-transform: uppercase;
+  }
+
+  /* Cards */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 36px 40px;
+  }
+  .card.flat { background: var(--bg-2); }
+
+  /* Tables */
+  table.deck-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 28px;
+    color: var(--text);
+  }
+  table.deck-table th {
+    text-align: left;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 18px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent-2);
+    font-weight: 500;
+    padding: 22px 28px;
+    border-bottom: 1px solid var(--border);
+    background: transparent;
+  }
+  table.deck-table td {
+    padding: 26px 28px;
+    border-bottom: 1px solid var(--border-soft);
+    vertical-align: top;
+    line-height: 1.4;
+  }
+  table.deck-table tr:last-child td { border-bottom: none; }
+  table.deck-table td.label { color: var(--accent); font-weight: 500; white-space: nowrap; }
+  table.deck-table td.mono { font-family: 'JetBrains Mono', monospace; font-size: 24px; color: var(--muted); }
+
+  /* Code-ish blocks */
+  .prompt-block {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px 32px;
+    background: var(--bg-2);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 24px;
+    line-height: 1.5;
+    color: var(--text);
+  }
+  .prompt-block .lead {
+    display: inline-block;
+    margin-right: 10px;
+    font-weight: 600;
+  }
+  .prompt-block.bad { border-left: 4px solid var(--danger); }
+  .prompt-block.good { border-left: 4px solid var(--ok); }
+
+  /* Markers */
+  .mark {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 18px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .mark.bad { background: rgba(255,107,107,0.12); color: var(--danger); border: 1px solid rgba(255,107,107,0.4); }
+  .mark.good { background: rgba(110,231,168,0.10); color: var(--ok); border: 1px solid rgba(110,231,168,0.4); }
+  .mark.warn { background: rgba(255,198,110,0.12); color: var(--warn); border: 1px solid rgba(255,198,110,0.4); }
+
+  /* Big stat */
+  .stat-num {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight: 300;
+    font-size: 320px;
+    line-height: 0.9;
+    letter-spacing: -0.04em;
+    color: var(--text);
+    background: linear-gradient(180deg, #ffffff 0%, #4d8dff 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .stat-num .pct { font-size: 160px; color: var(--accent-2); -webkit-text-fill-color: var(--accent-2); }
+
+  /* Demo banner */
+  .demo-banner {
+    display: inline-flex; align-items: center; gap: 18px;
+    padding: 14px 24px;
+    border: 1px solid var(--accent);
+    border-radius: 100px;
+    background: var(--accent-soft);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 20px;
+    color: var(--accent-2);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+  .demo-banner .pulse {
+    width: 12px; height: 12px; border-radius: 50%;
+    background: #ff5b5b;
+    box-shadow: 0 0 0 0 rgba(255,91,91,0.6);
+    animation: pulse 1.6s infinite;
+  }
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(255,91,91,0.6); }
+    70% { box-shadow: 0 0 0 14px rgba(255,91,91,0); }
+    100% { box-shadow: 0 0 0 0 rgba(255,91,91,0); }
+  }
+
+  /* Cover specifics */
+  .cover { background: radial-gradient(ellipse at 25% 20%, #1a2856 0%, #0a1027 60%, #06091a 100%); }
+  .cover-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(77,141,255,0.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(77,141,255,0.08) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse at 25% 20%, black 10%, transparent 70%);
+    pointer-events: none;
+  }
+  .cover-glow {
+    position: absolute;
+    width: 900px; height: 900px;
+    right: -240px; bottom: -260px;
+    background: radial-gradient(circle, rgba(110,231,255,0.18), rgba(77,141,255,0.05) 40%, transparent 70%);
+    filter: blur(20px);
+    pointer-events: none;
+  }
+  .cover h1 {
+    font-size: 156px;
+    line-height: 0.98;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    margin: 0;
+  }
+  .cover h1 .l2 { color: var(--accent-2); display: block; }
+  .cover-sub {
+    font-size: 38px;
+    color: var(--muted);
+    max-width: 1200px;
+    line-height: 1.35;
+    margin: 36px 0 0 0;
+  }
+  .cover-meta {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    border-top: 1px solid var(--border);
+    padding-top: 36px;
+  }
+  .cover-meta .col { padding-right: 40px; }
+  .cover-meta .col + .col { border-left: 1px solid var(--border); padding-left: 40px; }
+  .cover-meta .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 24px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--dim);
+    margin-bottom: 16px;
+  }
+  .cover-meta .val { font-size: 28px; color: var(--text); line-height: 1.5; }
+  .cover-meta .val.mono { font-family: 'JetBrains Mono', monospace; font-size: 24px; color: var(--accent-2); line-height: 1.5; }
+
+  /* Two-column layouts */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; flex: 1; }
+  .three-col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; flex: 1; }
+
+  /* Bullets */
+  ul.clean { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 24px; }
+  ul.clean li { display: flex; gap: 24px; align-items: flex-start; font-size: 32px; line-height: 1.4; }
+  ul.clean li .marker {
+    flex-shrink: 0; width: 28px; text-align: center;
+    font-family: 'JetBrains Mono', monospace; font-size: 22px;
+    color: var(--accent); margin-top: 6px;
+  }
+
+  /* Quote */
+  .quote {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight: 300;
+    font-size: 64px;
+    line-height: 1.18;
+    letter-spacing: -0.01em;
+    color: var(--text);
+  }
+  .quote .accent { color: var(--accent-2); }
+
+  /* Comparison columns */
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    flex: 1;
+  }
+  .compare > div {
+    padding: 44px 48px;
+    display: flex; flex-direction: column; gap: 24px;
+  }
+  .compare > div + div { border-left: 1px solid var(--border); }
+  .compare .col-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 18px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  .compare .col-bad .col-label { color: var(--danger); }
+  .compare .col-good .col-label { color: var(--ok); }
+  .compare .col-bad { background: linear-gradient(180deg, rgba(255,107,107,0.04), transparent); }
+  .compare .col-good { background: linear-gradient(180deg, rgba(110,231,168,0.04), transparent); }
+
+  /* Flow diagram */
+  .flow {
+    display: flex; align-items: center; gap: 16px;
+    flex-wrap: wrap;
+  }
+  .flow .step {
+    padding: 22px 30px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--surface);
+    font-size: 28px;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .flow .step.ghost { background: transparent; border-style: dashed; color: var(--muted); }
+  .flow .step.accent { border-color: var(--accent); color: var(--accent-2); background: var(--accent-soft); }
+  .flow .arrow { color: var(--dim); font-size: 28px; font-family: 'JetBrains Mono', monospace; }
+
+  /* Big numbers grid */
+  .big-pair { display: grid; grid-template-columns: 1.4fr 1fr; gap: 60px; flex: 1; align-items: center; }
+
+  /* Section divider line */
+  .hr-soft { height: 1px; background: var(--border); border: 0; margin: 0; }
+
+  /* Header on top label */
+  .top-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+  }
+
+  /* Footer fixed strip with page info — done by deck-stage already, but add author chip */
+  .author-chip {
+    position: absolute;
+    bottom: 48px; right: 100px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    color: var(--dim);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+<deck-stage width="1920" height="1080">
+
+<!-- SLIDE 1 — Cover -->
+<section class="slide cover" data-label="01 Portada">
+  <div class="cover-grid"></div>
+  <div class="cover-glow"></div>
+  <div class="slide-inner" style="justify-content: space-between;">
+    <div>
+      <div class="top-label" style="font-size: 24px;"><span class="dot" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--accent-2);box-shadow:0 0 12px var(--accent-2);margin-right:14px;vertical-align:middle;"></span>Clase Magistral · 06.05.2026</div>
+      <h1>IA: Revolución <span class="l2">en el Desarrollo</span></h1>
+      <p class="cover-sub">Cómo la IA está redefiniendo el rol del desarrollador en 2026.</p>
+    </div>
+
+    <div class="cover-meta">
+      <div class="col">
+        <div class="label">Disertante</div>
+        <div class="val">Rinaldo Julio Sassaroli</div>
+        <div class="val mono">Senior Software Developer · Tech Leader</div>
+        <div class="val mono" style="color:var(--muted);">+25 años de experiencia</div>
+      </div>
+      <div class="col">
+        <div class="label">Fecha · Hora</div>
+        <div class="val mono">06 · MAY · 2026</div>
+        <div class="val mono">20:00 hs (ART)</div>
+      </div>
+      <div class="col">
+        <div class="label">Modalidad · Duración</div>
+        <div class="val mono">VIRTUAL</div>
+        <div class="val mono">60 min + 45 min Q&amp;A</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 2 — El número que lo dice todo -->
+<section class="slide" data-label="02 El numero que lo dice todo">
+  <div class="chrome"><div><span class="dot"></span>02 / 24 · CONTEXTO</div><div>EL NÚMERO QUE LO DICE TODO</div></div>
+  <div class="slide-inner">
+    <div class="big-pair" style="margin-top: 30px;">
+      <div>
+        <div class="eyebrow">Adopción de IA en desarrollo · 2026</div>
+        <div class="stat-num">92<span class="pct">%</span></div>
+        <p class="body" style="font-size: 38px; margin-top: 28px; max-width: 700px;">de los devs en EE.UU. usa IA <span style="color: var(--accent-2);">a diario</span>.</p>
+      </div>
+      <div class="stack-xl">
+        <div class="card">
+          <div class="eyebrow" style="margin-bottom: 14px;">Global</div>
+          <div style="font-size: 110px; font-weight: 300; line-height: 1; letter-spacing: -0.02em;">67<span style="font-size:60px;color:var(--accent-2);">%</span></div>
+          <p class="small" style="margin-top: 14px;">de los devs a nivel mundial la usa todos los días</p>
+        </div>
+        <div>
+          <div class="eyebrow" style="margin-bottom: 18px;">Pregunta abierta</div>
+          <p class="body" style="font-size: 38px; line-height: 1.3;">¿Cuántos de ustedes la usan <span style="color:var(--accent-2);">todos los días</span>?</p>
+        </div>
+        <div style="border-top: 1px solid var(--border); padding-top: 24px;">
+          <p class="small mono" style="color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase;">La IA ya no es el futuro. Es el presente.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="author-chip">RJS · IA EN DESARROLLO · 2026</div>
+</section>
+
+<!-- SLIDE 3 — Qué es realmente un LLM -->
+<section class="slide" data-label="03 Que es un LLM">
+  <div class="chrome"><div><span class="dot"></span>03 / 24 · FUNDAMENTOS</div><div>FUNDAMENTOS</div></div>
+  <div class="slide-inner">
+    <h1 class="title">¿Qué es realmente un <span class="accent">LLM</span>?</h1>
+
+    <div class="two-col" style="align-items: stretch;">
+      <div class="stack-l">
+        <div>
+          <div class="eyebrow">Definición</div>
+          <p class="body">Un sistema estadístico avanzado, entrenado con <span style="color:var(--accent-2);">miles de millones</span> de líneas de texto y código.</p>
+        </div>
+        <div>
+          <div class="eyebrow">Función</div>
+          <p class="body">Predecir el <span style="color:var(--accent-2);">siguiente fragmento más probable</span> dado un contexto.</p>
+        </div>
+      </div>
+
+      <div class="card" style="display:flex;flex-direction:column;justify-content:center;gap:28px;">
+        <div style="display:flex;align-items:center;gap:24px;">
+          <div class="mark bad">×</div>
+          <div class="body">No piensa como un humano</div>
+        </div>
+        <hr class="hr-soft" />
+        <div style="display:flex;align-items:center;gap:24px;">
+          <div class="mark bad">×</div>
+          <div class="body">No tiene conciencia</div>
+        </div>
+        <hr class="hr-soft" />
+        <div style="display:flex;align-items:center;gap:24px;">
+          <div class="mark good">✓</div>
+          <div class="body">Reconoce patrones a escala masiva</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="author-chip">RJS · 03 / 24</div>
+</section>
+
+<!-- SLIDE 4 — Motor de razonamiento -->
+<section class="slide" data-label="04 Motor de razonamiento">
+  <div class="chrome"><div><span class="dot"></span>04 / 24 · FUNDAMENTOS</div><div>FUNDAMENTOS</div></div>
+  <div class="slide-inner">
+    <h1 class="title">Motor de razonamiento, <span class="accent">no enciclopedia</span>.</h1>
+
+    <div class="two-col" style="align-items:stretch;">
+      <div class="card" style="background: var(--bg-2); display:flex;flex-direction:column;justify-content:center;gap:28px;">
+        <div class="eyebrow" style="color: var(--muted); margin: 0;">Buscador tradicional</div>
+        <div style="display:flex;align-items:center;gap:18px;">
+          <div class="mono" style="font-size: 28px; color: var(--muted);">consulta</div>
+          <span class="mono" style="color: var(--dim);">→</span>
+          <div class="mono" style="font-size: 28px; color: var(--muted);">índice</div>
+          <span class="mono" style="color: var(--dim);">→</span>
+          <div class="mono" style="font-size: 28px; color: var(--muted);">resultado</div>
+        </div>
+        <p class="body-muted" style="font-size: 28px;">Busca en una base de datos. Devuelve lo que ya estaba escrito.</p>
+      </div>
+
+      <div class="card" style="border-color: var(--accent); display:flex;flex-direction:column;justify-content:center;gap:28px;">
+        <div class="eyebrow" style="margin: 0;">LLM</div>
+        <div style="display:flex;align-items:center;gap:18px;">
+          <div class="mono" style="font-size: 28px; color: var(--text);">contexto</div>
+          <span class="mono" style="color: var(--accent);">→</span>
+          <div class="mono" style="font-size: 28px; color: var(--accent-2);">construye</div>
+          <span class="mono" style="color: var(--accent);">→</span>
+          <div class="mono" style="font-size: 28px; color: var(--text);">respuesta</div>
+        </div>
+        <p class="body" style="font-size: 28px;">No busca: <span style="color:var(--accent-2);">construye</span> la respuesta token por token.</p>
+      </div>
+    </div>
+
+    <div class="row" style="margin-top: 44px; gap: 36px;">
+      <div class="grow" style="display:flex;align-items:flex-start;gap:20px;">
+        <div class="mark warn">!</div>
+        <p class="body" style="font-size: 28px;">Por eso puede equivocarse de formas que un buscador no haría.</p>
+      </div>
+      <div class="grow" style="display:flex;align-items:flex-start;gap:20px;">
+        <div class="mark good">✓</div>
+        <p class="body" style="font-size: 28px;">Por eso puede razonar problemas que ningún buscador podría resolver.</p>
+      </div>
+    </div>
+  </div>
+  <div class="author-chip">RJS · 04 / 24</div>
+</section>
+
+<!-- SLIDE 5 — LLM vs Copilot vs Agente -->
+<section class="slide" data-label="05 LLM Copilot Agente">
+  <div class="chrome"><div><span class="dot"></span>05 / 24 · TAXONOMÍA</div><div>TAXONOMÍA</div></div>
+  <div class="slide-inner">
+    <h1 class="title">LLM, <span class="accent">Copilot</span> y Agente.</h1>
+    <p class="subtitle" style="margin-bottom: 52px;">Tres categorías que parecen lo mismo y no lo son.</p>
+
+    <div class="card" style="padding: 0; overflow: hidden;">
+      <table class="deck-table">
+        <thead>
+          <tr>
+            <th style="width: 22%;">Tipo</th>
+            <th style="width: 48%;">Qué hace</th>
+            <th style="width: 30%;">Ejemplos</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="label">LLM</td>
+            <td>Responde a prompts de forma conversacional.</td>
+            <td class="mono">ChatGPT · Claude · Gemini</td>
+          </tr>
+          <tr>
+            <td class="label">Copilot</td>
+            <td>Sugiere código en tiempo real, dentro del editor.</td>
+            <td class="mono">GitHub Copilot</td>
+          </tr>
+          <tr>
+            <td class="label">Agente</td>
+            <td>Ejecuta tareas autónomas de múltiples pasos.</td>
+            <td class="mono">Claude Code · Cursor Agent</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="small" style="margin-top: 36px; font-family: 'JetBrains Mono', monospace; letter-spacing: 0.1em; text-transform: uppercase;">Cada categoría exige un nivel distinto de criterio del dev.</p>
+  </div>
+  <div class="author-chip">RJS · 05 / 24</div>
+</section>
+
+<!-- SLIDE 6 — DEMO 1 -->
+<section class="slide" data-label="06 Demo modelos">
+  <div class="chrome"><div><span class="dot"></span>06 / 24 · DEMO EN VIVO</div><div>DEMO 01</div></div>
+  <div class="slide-inner" style="justify-content: center;">
+    <div class="demo-banner" style="align-self: flex-start; margin-bottom: 44px;">
+      <span class="pulse"></span>
+      DEMO EN VIVO · 5 min
+    </div>
+    <h1 class="title" style="font-size: 84px; margin-bottom: 60px;">Mismo prompt,<br/><span class="accent">dos modelos distintos.</span></h1>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="eyebrow">El prompt</div>
+        <div class="prompt-block" style="margin-top: 16px;">
+          Explicame qué hace este código y si tiene algún problema de seguridad.
+        </div>
+      </div>
+      <div class="card flat" style="display:flex;flex-direction:column;justify-content:center;gap:18px;">
+        <div class="eyebrow" style="color: var(--accent); margin: 0;">Indicación al disertante</div>
+        <p class="body" style="font-size: 28px;">Correr el mismo prompt en dos modelos distintos. Comparar nivel de detalle, hallazgos de seguridad y tono de la respuesta.</p>
+      </div>
+    </div>
+
+    <p class="small" style="margin-top: 44px; font-family: 'JetBrains Mono', monospace; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent-2);">No todas las IAs son iguales. Elegir la herramienta correcta es parte del oficio.</p>
+  </div>
+  <div class="author-chip">RJS · 06 / 24</div>
+</section>
+
+<!-- SLIDE 7 — El error más común -->
+<section class="slide" data-label="07 El error mas comun">
+  <div class="chrome"><div><span class="dot"></span>07 / 24 · ADVERTENCIA</div><div>ADVERTENCIA</div></div>
+  <div class="slide-inner">
+    <div class="eyebrow" style="color: var(--danger);">El error más común</div>
+    <p class="quote" style="margin-top: 32px; font-size: 72px; max-width: 1500px; line-height: 1.2;">
+      Es como ir al gimnasio<br/>y <span class="accent">pagarle a otro</span> para que<br/><span style="color: var(--danger);">levante las pesas.</span>
+    </p>
+
+    <div class="row" style="margin-top: 80px; gap: 28px;">
+      <div class="card grow">
+        <div class="eyebrow" style="color: var(--danger);">Consecuencia</div>
+        <p class="body" style="margin-top: 16px;">Generás <span style="color: var(--danger);">dependencia</span>, no aprendés.</p>
+      </div>
+      <div class="card grow" style="border-color: var(--accent);">
+        <div class="eyebrow">La frase para llevarse</div>
+        <p class="body" style="margin-top: 16px;">Copiar código sin entenderlo no es aprender a programar — es <span class="mono" style="color: var(--accent-2);">aprender a copiar</span>.</p>
+      </div>
+    </div>
+  </div>
+  <div class="author-chip">RJS · 07 / 24</div>
+</section>
+
+<!-- SLIDE 8 — Tutor 24/7 -->
+<section class="slide" data-label="08 Tutor 24-7">
+  <div class="chrome"><div><span class="dot"></span>08 / 24 · USO 1 / 4</div><div>USO 1 — TUTOR</div></div>
+  <div class="slide-inner">
+    <div class="eyebrow">Uso saludable · 01</div>
+    <h1 class="title">Pedile que <span class="accent">explique</span>, no que haga.</h1>
+
+    <div class="compare" style="margin-top: 12px;">
+      <div class="col-bad">
+        <div class="col-label">❌ Mal · pedís el resultado</div>
+        <div class="prompt-block bad">
+          Haceme el código de un sistema de permisos en Linux.
+        </div>
+        <p class="small" style="color: var(--muted);">Te quedás con código que no entendés.</p>
+      </div>
+      <div class="col-good">
+        <div class="col-label">✅ Bien · pedís entender</div>
+        <div class="prompt-block good">
+          ¿Por qué el permiso 755 permite ejecutar pero el 644 no? Explicámelo con manzanas.
+        </div>
+        <p class="small" style="color: var(--muted);">Te queda el modelo mental para siempre.</p>
+      </div>
+    </div>
+
+    <p class="small mono" style="margin-top: 36px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent-2);">El tutor más paciente del mundo. No se cansa, no te juzga.</p>
+  </div>
+  <div class="author-chip">RJS · 08 / 24</div>
+</section>
+
+<!-- SLIDE 9 — Revisor + Boilerplate -->
+<section class="slide" data-label="09 Revisor y Boilerplate">
+  <div class="chrome"><div><span class="dot"></span>09 / 24 · USOS 2 Y 3 / 4</div><div>USOS 2 Y 3</div></div>
+  <div class="slide-inner">
+    <div class="eyebrow">Usos saludables · 02 y 03</div>
+    <h1 class="title"><span class="accent">Revisor</span> de código y <span class="accent">boilerplate</span>.</h1>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="eyebrow">02 · Revisor</div>
+        <p class="body" style="font-size: 28px; margin-top: 16px;">Cuando ya escribiste algo, pedile una segunda opinión.</p>
+        <div class="prompt-block" style="margin-top: 24px;">
+          Escribí este script para leer un JSON. ¿Ves algún error de seguridad o forma de hacerlo más eficiente?
+        </div>
+      </div>
+      <div class="card">
+        <div class="eyebrow">03 · Boilerplate</div>
+        <p class="body" style="font-size: 28px; margin-top: 16px;">Para estructuras repetitivas que <span style="color:var(--accent-2);">ya sabés hacer</span>.</p>
+        <div class="prompt-block" style="margin-top: 24px;">
+          Generame la estructura básica de un proyecto FastAPI con tests, settings y router de auth vacío.
+        </div>
+      </div>
+    </div>
+
+    <p class="small mono" style="margin-top: 36px; letter-spacing: 0.12em; text-transform: uppercase;">Boilerplate solo de cosas que entendés. Si no, volvemos al slide 07.</p>
+  </div>
+  <div class="author-chip">RJS · 09 / 24</div>
+</section>
+
+<!-- SLIDE 10 — Par de debug -->
+<section class="slide" data-label="10 Par de debug">
+  <div class="chrome"><div><span class="dot"></span>10 / 24 · USO 4 / 4</div><div>USO 4 — DEBUG</div></div>
+  <div class="slide-inner">
+    <div class="eyebrow">Uso saludable · 04</div>
+    <h1 class="title">Cuando estás trabado, <span class="accent">describí el problema</span>.</h1>
+
+    <div class="card" style="border-color: var(--accent);">
+      <div class="eyebrow">Prompt modelo</div>
+      <div class="prompt-block good" style="margin-top: 16px; font-size: 26px;">
+        Tengo este error en Python 3.12 con SQLAlchemy. Este es el stack trace:<br/>
+        <span style="color: var(--muted);">[...]</span><br/><br/>
+        ¿Qué podría estar causando el problema? <span style="color: var(--accent-2);">Dame 3 hipótesis antes de darme el código.</span>
+      </div>
+    </div>
+
+    <div class="row" style="margin-top: 44px; gap: 28px;">
+      <div class="grow" style="display:flex;gap:20px;align-items:flex-start;">
+        <div class="mark good">✓</div>
+        <p class="body" style="font-size: 28px;">La IA te ayuda a <span style="color: var(--accent-2);">razonar</span>, no te da la solución directa.</p>
+      </div>
+      <div class="grow" style="display:flex;gap:20px;align-items:flex-start;">
+        <div class="mark good">✓</div>
+        <p class="body" style="font-size: 28px;">Pedir hipótesis antes de código fuerza a la IA — y a vos — a pensar.</p>
+      </div>
+    </div>
+  </div>
+  <div class="author-chip">RJS · 10 / 24</div>
+</section>
+
+<!-- SLIDE 11 — DEMO Prompt malo vs bueno -->
+<section class="slide" data-label="11 Demo prompt">
+  <div class="chrome"><div><span class="dot"></span>11 / 24 · DEMO EN VIVO</div><div>DEMO 02</div></div>
+  <div class="slide-inner">
+    <div class="demo-banner" style="align-self: flex-start; margin-bottom: 28px;">
+      <span class="pulse"></span>
+      DEMO EN VIVO · 5 min
+    </div>
+    <h1 class="title" style="font-size: 56px;">Anatomía de un <span class="accent">buen prompt</span>.</h1>
+
+    <div class="compare" style="flex: 1;">
+      <div class="col-bad">
+        <div class="col-label">❌ Prompt vago</div>
+        <div class="prompt-block bad">
+          Haceme un login en Python.
+        </div>
+        <p class="small" style="color: var(--muted);">Resultado genérico, sin contexto, probablemente inseguro.</p>
+      </div>
+      <div class="col-good">
+        <div class="col-label">✅ Prompt construido</div>
+        <div class="prompt-block good" style="font-size: 19px; line-height: 1.55;">
+          Estoy construyendo un sistema de login en <span style="color: var(--accent-2);">Python 3.12 con FastAPI</span>.<br/>Necesito un endpoint <span class="mono">POST /login</span> que reciba email y password,<br/>valide contra <span style="color: var(--accent-2);">PostgreSQL con SQLAlchemy</span> y devuelva un JWT.<br/><br/>¿Podés revisarlo por errores de seguridad?
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: 32px; padding: 24px 36px; background: var(--accent-soft); border-color: var(--accent);">
+      <div class="mono" style="font-size: 22px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent-2); margin-bottom: 8px;">Fórmula</div>
+      <div class="mono" style="font-size: 28px; color: var(--text);">contexto&nbsp;&nbsp;+&nbsp;&nbsp;tecnología&nbsp;&nbsp;+&nbsp;&nbsp;objetivo&nbsp;&nbsp;+&nbsp;&nbsp;criterio de validación</div>
+    </div>
+  </div>
+  <div class="author-chip">RJS · 11 / 24</div>
+</section>
+
+<!-- SLIDE 12 — Reglas 1 y 2 -->
+<section class="slide" data-label="12 Reglas 1 y 2">
+  <div class="chrome"><div><span class="dot"></span>12 / 24 · REGLAS DE ORO</div><div>REGLAS 1 Y 2 / 4</div></div>
+  <div class="slide-inner">
+    <div class="eyebrow">Reglas de oro</div>
+    <h1 class="title">Lo que <span class="accent">nunca</span> hay que hacer.</h1>
+
+    <div class="stack-l" style="gap: 32px;">
+      <div class="card" style="border-left: 6px solid var(--danger); display:flex;gap:32px;align-items:center;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size: 80px; font-weight: 600; color: var(--danger); line-height: 1;">01</div>
+        <div>
+          <div class="eyebrow" style="color: var(--danger); margin: 0 0 12px 0;">Regla 1 · Crítica</div>
+          <p class="body" style="font-size: 36px; line-height: 1.3;">Nunca pegar código que no entendés.<br/><span style="color: var(--muted); font-size: 28px;">Léelo línea por línea, aunque te lleve cinco minutos más.</span></p>
+        </div>
+      </div>
+
+      <div class="card" style="border-left: 6px solid var(--warn); display:flex;gap:32px;align-items:center;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size: 80px; font-weight: 600; color: var(--warn); line-height: 1;">02</div>
+        <div>
+          <div class="eyebrow" style="color: var(--warn); margin: 0 0 12px 0;">Regla 2 · Alucinaciones</div>
+          <p class="body" style="font-size: 36px; line-height: 1.3;">La IA puede inventar librerías o funciones.<br/><span style="color: var(--muted); font-size: 28px;">Siempre verificar contra documentación oficial antes de pegar.</span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="author-chip">RJS · 12 / 24</div>
+</section>
+
+<!-- SLIDE 13 — Regla 3 datos sensibles -->
+<section class="slide" data-label="13 Regla 3 datos sensibles">
+  <div class="chrome"><div><span class="dot"></span>13 / 24 · REGLA 3 / 4</div><div>REGLA 3 — DATOS SENSIBLES</div></div>
+  <div class="slide-inner">
+    <div class="eyebrow">Regla 3 · Corrección de mito</div>
+    <h1 class="title">Datos sensibles: <span class="accent">lo que se dice y lo que es</span>.</h1>
+
+    <div class="two-col">
+      <div class="card" style="border-color: rgba(255,107,107,0.4);">
+        <div class="eyebrow" style="color: var(--danger);">Mito que circula</div>
+        <p class="body" style="font-size: 30px; line-height: 1.35; margin-top: 16px;">«Todo lo que subís a la IA <span style="color: var(--danger);">entrena el modelo</span>».</p>
+        <hr class="hr-soft" style="margin: 24px 0;" />
+        <div class="mono" style="font-size: 22px; color: var(--danger); letter-spacing: 0.12em;">FALSO EN LA MAYORÍA DE LOS CASOS</div>
+      </div>
+
+      <div class="card" style="border-color: var(--accent);">
+        <div class="eyebrow">Realidad</div>
+        <p class="body" style="font-size: 28px; line-height: 1.4; margin-top: 16px;">Las políticas <span style="color: var(--accent-2);">varían por plataforma, plan y fecha</span>, y cambian sin aviso.</p>
+        <hr class="hr-soft" style="margin: 24px 0;" />
+        <p class="small" style="font-size: 24px;">Lo que aplica a ChatGPT Free no aplica a la API. Lo que aplica hoy puede no aplicar el mes que viene.</p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: 40px; background: var(--accent-soft); border-color: var(--accent); padding: 32px 44px;">
+      <div class="eyebrow" style="margin-bottom: 12px;">Regla práctica · cubre todos los casos</div>
+      <p class="body" style="font-size: 38px; line-height: 1.25;">Tratá <span style="color: var(--accent-2);">todo lo que subís</span> como si fuera <span style="color: var(--accent-2);">público</span>.</p>
+    </div>
+  </div>
+  <div class="author-chip">RJS · 13 / 24</div>
+</section>
+
+<!-- SLIDE 14 — Regla 4 versiones -->
+<section class="slide" data-label="14 Regla 4 versiones">
+  <div class="chrome"><div><span class="dot"></span>14 / 24 · REGLA 4 / 4</div><div>REGLA 4 — VERSIONES</div></div>
+  <div class="slide-inner">
+    <div class="eyebrow">Regla 4 · Nueva en 2026</div>
+    <h1 class="title">Verificá la <span class="accent">versión</span>.</h1>
+
+    <div class="two-col" style="align-items: stretch;">
+      <div class="stack-l" style="justify-content: center;">
+        <div style="display:flex;gap:24px;align-items:flex-start;">
+          <div class="mark warn">!</div>
+          <p class="body" style="font-size: 32px;">La IA puede responderte con <span style="color: var(--warn);">sintaxis de una versión vieja</span> del framework.</p>
+        </div>
+        <div style="display:flex;gap:24px;align-items:flex-start;">
+          <div class="mark good">✓</div>
+          <p class="body" style="font-size: 32px;">Solución: aclarar siempre la <span style="color: var(--accent-2);">versión exacta</span> en el prompt.</p>
+        </div>
+      </div>
+
+      <div class="card flat" style="display:flex;flex-direction:column;justify-content:center;gap:24px;">
+        <div class="eyebrow">Ejemplos de prompt</div>
+        <div class="prompt-block" style="font-size: 26px;">
+          Python <span style="color: var(--accent-2);">3.12</span> con FastAPI <span style="color: var(--accent-2);">0.115</span>
+        </div>
+        <div class="prompt-block" style="font-size: 26px;">
+          .NET <span style="color: var(--accent-2);">9</span> con C# <span style="color: var(--accent-2);">13</span>
+        </div>
+        <p class="small" style="font-family: 'JetBrains Mono', monospace; letter-spacing: 0.1em;">No es paranoia. Es ahorrarte una hora de debug.</p>
+      </div>
+    </div>
+  </div>
+  <div class="author-chip">RJS · 14 / 24</div>
+</section>
+
+<!-- SLIDE 15 — Nuevo ciclo -->
+<section class="slide" data-label="15 Nuevo ciclo de desarrollo">
+  <div class="chrome"><div><span class="dot"></span>15 / 24 · CAMBIO DE CICLO</div><div>NUEVO CICLO</div></div>
+  <div class="slide-inner">
+    <h1 class="title">El <span class="accent">nuevo ciclo</span> de desarrollo.</h1>
+
+    <div class="stack-xl" style="gap: 60px; margin-top: 8px;">
+      <div>
+        <div class="eyebrow" style="color: var(--muted);">Antes</div>
+        <div class="flow" style="margin-top: 18px;">
+          <div class="step ghost">Pensar</div>
+          <span class="arrow">→</span>
+          <div class="step ghost">Escribir código</div>
+          <span class="arrow">→</span>
+          <div class="step ghost">Debuggear</div>
+          <span class="arrow">→</span>
+          <div class="step ghost">Repetir</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="eyebrow">Ahora</div>
+        <div class="flow" style="margin-top: 18px;">
+          <div class="step accent">Pensar</div>
+          <span class="arrow" style="color: var(--accent);">→</span>
+          <div class="step accent">Promptear</div>
+          <span class="arrow" style="color: var(--accent);">→</span>
+          <div class="step accent">Revisar</div>
+          <span class="arrow" style="color: var(--accent);">→</span>
+          <div class="step accent">Iterar</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: 60px; background: var(--accent-soft); border-color: var(--accent); padding: 28px 40px; align-self: flex-start;">
+      <div class="mono" style="font-size: 22px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent-2); margin-bottom: 6px;">Dato</div>
+      <p class="body" style="font-size: 32px; margin: 0;">El <span style="color: var(--accent-2); font-weight: 600;">80%</span> del tiempo ahora está en la <span style="color: var(--accent-2);">revisión y el criterio</span>.</p>
+    </div>
+  </div>
+  <div class="author-chip">RJS · 15 / 24</div>
+</section>
+
+<!-- SLIDE 16 — Agentic AI -->
+<section class="slide" data-label="16 Agentic AI">
+  <div class="chrome"><div><span class="dot"></span>16 / 24 · EL SALTO</div><div>AGENTIC AI</div></div>
+  <div class="slide-inner">
+    <div class="eyebrow">El salto que cambia todo</div>
+    <h1 class="title"><span class="accent">Agentic AI</span>.</h1>
+
+    <div class="two-col" style="align-items: stretch;">
+      <div class="stack-l" style="justify-content: flex-start;">
+        <div>
+          <div class="eyebrow">Definición</div>
+          <p class="body" style="font-size: 30px; margin-top: 14px;">Sistemas que <span style="color: var(--accent-2);">planifican</span> y <span style="color: var(--accent-2);">ejecutan</span> tareas de múltiples pasos de forma autónoma.</p>
+        </div>
+        <div>
+          <div class="eyebrow">Cambio de rol</div>
+          <p class="body" style="font-size: 30px; margin-top: 14px;">El dev deja de escribir código y pasa a <span style="color: var(--accent-2);">definir qué hacer</span> y <span style="color: var(--accent-2);">validar</span> que esté bien hecho.</p>
+        </div>
+      </div>
+
+      <div class="card" style="background: var(--bg-2); display:flex;flex-direction:column;gap:18px;">
+        <div class="eyebrow" style="margin: 0;">Ejemplo real · Claude Code</div>
+        <div class="flow" style="flex-direction: column; align-items: stretch; gap: 14px;">
+          <div class="step" style="text-align: center;">Lee tu codebase</div>
+          <div style="text-align:center; color: var(--accent);" class="mono">↓</div>
+          <div class="step" style="text-align: center;">Planifica cambios en múltiples archivos</div>
+          <div style="text-align:center; color: var(--accent);" class="mono">↓</div>
+          <div class="step" style="text-align: center;">Ejecuta tests</div>
+          <div style="text-align:center; color: var(--accent);" class="mono">↓</div>
+          <div class="step accent" style="text-align: center;">Corrige errores — solo</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="author-chip">RJS · 16 / 24</div>
+</section>
+
+<!-- SLIDE 17 — Vibe Coding -->
+<section class="slide" data-label="17 Vibe coding">
+  <div class="chrome"><div><span class="dot"></span>17 / 24 · TENDENCIA</div><div>VIBE CODING</div></div>
+  <div class="slide-inner">
+    <div class="eyebrow">Tendencia 2026</div>
+    <h1 class="title"><span class="accent">Vibe coding</span>: oportunidad y riesgo.</h1>
+
+    <p class="body-muted" style="font-size: 32px; margin-bottom: 40px;">Desarrollo dirigido por lenguaje natural.</p>
+
+    <div class="compare" style="flex: 1;">
+      <div class="col-good">
+        <div class="col-label">✅ Oportunidad</div>
+        <p class="body" style="font-size: 32px;">Velocidad <span style="color: var(--accent-2);">brutal</span> en prototipos.</p>
+        <p class="small" style="color: var(--muted);">De idea a demo funcional en una tarde.</p>
+      </div>
+      <div class="col-bad">
+        <div class="col-label">❌ Riesgo</div>
+        <p class="body" style="font-size: 32px;">Sin criterio genera <span class="mono" style="color: var(--danger);">"slop"</span>.</p>
+        <p class="small" style="color: var(--muted);">Código que parece correcto pero falla en seguridad o performance.</p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: 36px; background: var(--accent-soft); border-color: var(--accent); padding: 24px 40px;">
+      <div class="mono" style="font-size: 22px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent-2); margin-bottom: 6px;">La clave</div>
+      <p class="body" style="font-size: 32px; margin: 0;">Usarlo con <span style="color: var(--accent-2);">criterio arquitectónico</span>.</p>
+    </div>
+  </div>
+  <div class="author-chip">RJS · 17 / 24</div>
+</section>
+
+<!-- SLIDE 18 — Habilidades -->
+<section class="slide" data-label="18 Habilidades que cambiaron">
+  <div class="chrome"><div><span class="dot"></span>18 / 24 · MERCADO</div><div>HABILIDADES</div></div>
+  <div class="slide-inner">
+    <div class="eyebrow">Qué se valora hoy</div>
+    <h1 class="title">Habilidades que <span class="accent">cambiaron de valor</span>.</h1>
+
+    <div class="two-col" style="align-items: stretch;">
+      <div class="card" style="border-color: rgba(110,231,168,0.4);">
+        <div style="display:flex;align-items:baseline;gap:18px;margin-bottom: 28px;">
+          <div class="eyebrow" style="color: var(--ok); margin: 0;">Subieron</div>
+          <div class="mono" style="color: var(--ok); font-size: 36px;">↑</div>
+        </div>
+        <ul class="clean">
+          <li><span class="marker" style="color: var(--ok);">▸</span> Lectura de código ajeno</li>
+          <li><span class="marker" style="color: var(--ok);">▸</span> Criterio arquitectónico</li>
+          <li><span class="marker" style="color: var(--ok);">▸</span> Testing</li>
+          <li><span class="marker" style="color: var(--ok);">▸</span> Systems thinking</li>
+          <li><span class="marker" style="color: var(--ok);">▸</span> Prompting</li>
+        </ul>
+      </div>
+
+      <div class="card" style="border-color: rgba(255,107,107,0.3);">
+        <div style="display:flex;align-items:baseline;gap:18px;margin-bottom: 28px;">
+          <div class="eyebrow" style="color: var(--danger); margin: 0;">Bajaron</div>
+          <div class="mono" style="color: var(--danger); font-size: 36px;">↓</div>
+        </div>
+        <ul class="clean">
+          <li><span class="marker" style="color: var(--danger);">▸</span> Memorizar sintaxis</li>
+          <li><span class="marker" style="color: var(--danger);">▸</span> Escribir boilerplate</li>
+          <li><span class="marker" style="color: var(--danger);">▸</span> Tareas repetitivas</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="author-chip">RJS · 18 / 24</div>
+</section>
+
+<!-- SLIDE 19 — El dev como supervisor -->
+<section class="slide" data-label="19 El dev como supervisor">
+  <div class="chrome"><div><span class="dot"></span>19 / 24 · TESIS</div><div>EL DEV COMO SUPERVISOR</div></div>
+  <div class="slide-inner" style="justify-content: center;">
+    <div class="eyebrow">Tesis</div>
+    <p class="quote" style="font-size: 72px; max-width: 1500px; margin-top: 20px;">
+      «El junior que usa IA bien <span class="accent">compite</span><br/>con el semi-senior que no la usa.»
+    </p>
+
+    <div class="row" style="margin-top: 80px; gap: 36px;">
+      <div class="card grow">
+        <div class="eyebrow">Lo que busca el mercado</div>
+        <p class="body" style="font-size: 28px; margin-top: 14px; line-height: 1.4;">No quien sepa <span style="color: var(--muted);">usar IA</span> —<br/>sino quien sepa <span style="color: var(--accent-2);">validar si lo que hizo está bien o mal</span>.</p>
+      </div>
+      <div class="card grow" style="border-color: var(--accent); background: var(--accent-soft);">
+        <div class="eyebrow">Tu valor en 2026</div>
+        <p class="body" style="font-size: 32px; margin-top: 14px; line-height: 1.3;">El <span style="color: var(--accent-2); font-weight: 600;">criterio</span> que la IA <span style="color: var(--accent-2);">no tiene</span>.</p>
+      </div>
+    </div>
+  </div>
+  <div class="author-chip">RJS · 19 / 24</div>
+</section>
+
+<!-- SLIDE 20 — Ecosistema de herramientas -->
+<section class="slide" data-label="20 Ecosistema de herramientas">
+  <div class="chrome"><div><span class="dot"></span>20 / 24 · MAPA</div><div>ECOSISTEMA</div></div>
+  <div class="slide-inner">
+    <h1 class="title" style="margin-bottom: 32px;">Ecosistema de <span class="accent">herramientas</span>.</h1>
+
+    <div class="card" style="padding: 0; overflow: hidden;">
+      <table class="deck-table">
+        <thead>
+          <tr>
+            <th style="width: 28%;">Herramienta</th>
+            <th style="width: 44%;">Para qué</th>
+            <th style="width: 28%;">Nivel</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="label mono" style="color: var(--accent);">ChatGPT / Gemini</td>
+            <td>Conceptos y dudas teóricas</td>
+            <td class="mono" style="color: var(--ok);">TODOS</td>
+          </tr>
+          <tr>
+            <td class="label mono" style="color: var(--accent);">Claude</td>
+            <td>Análisis complejo, revisión de código</td>
+            <td class="mono" style="color: var(--ok);">TODOS</td>
+          </tr>
+          <tr>
+            <td class="label mono" style="color: var(--accent);">GitHub Copilot</td>
+            <td>Autocompletado en VS Code</td>
+            <td class="mono" style="color: var(--ok);">TODOS</td>
+          </tr>
+          <tr>
+            <td class="label mono" style="color: var(--accent);">Cursor</td>
+            <td>Editor diseñado para IA</td>
+            <td class="mono" style="color: var(--warn);">INTERMEDIO+</td>
+          </tr>
+          <tr>
+            <td class="label mono" style="color: var(--accent);">Claude Code</td>
+            <td>Agente para proyectos completos</td>
+            <td class="mono" style="color: var(--danger);">AVANZADO</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="author-chip">RJS · 20 / 24</div>
+</section>
+
+<!-- SLIDE 21 — Demo Copilot -->
+<section class="slide" data-label="21 Demo Copilot">
+  <div class="chrome"><div><span class="dot"></span>21 / 24 · DEMO EN VIVO</div><div>DEMO 03</div></div>
+  <div class="slide-inner" style="justify-content: center;">
+    <div class="demo-banner" style="align-self: flex-start; margin-bottom: 44px;">
+      <span class="pulse"></span>
+      DEMO EN VIVO · 5 min
+    </div>
+    <h1 class="title" style="font-size: 84px;">Autocompletado en el <span class="accent">editor</span>.</h1>
+
+    <div class="two-col" style="margin-top: 20px;">
+      <div class="card flat">
+        <div class="eyebrow" style="color: var(--accent); margin-bottom: 14px;">Indicación al disertante</div>
+        <p class="body" style="font-size: 28px;">Abrir el editor con autocompletado IA activo. Escribir desde cero y mostrar cómo cambian las sugerencias según el contexto del proyecto.</p>
+      </div>
+      <div class="card" style="border-color: var(--accent); display:flex;flex-direction:column;justify-content:center;">
+        <div class="eyebrow">Punto clave</div>
+        <p class="body" style="font-size: 30px; margin-top: 14px; line-height: 1.3;">No es magia, es <span style="color: var(--accent-2);">contexto</span>.<br/>Cuanto mejor sea tu código y tus comentarios, mejor funciona.</p>
+      </div>
+    </div>
+  </div>
+  <div class="author-chip">RJS · 21 / 24</div>
+</section>
+
+<!-- SLIDE 22 — MCP -->
+<section class="slide" data-label="22 MCP Model Context Protocol">
+  <div class="chrome"><div><span class="dot"></span>22 / 24 · INFRAESTRUCTURA</div><div>MCP</div></div>
+  <div class="slide-inner">
+    <div class="eyebrow">El protocolo que conecta todo</div>
+    <h1 class="title"><span class="accent">MCP</span>: el USB-C de la IA.</h1>
+
+    <div class="two-col" style="align-items: stretch;">
+      <div class="stack-l" style="justify-content: flex-start;">
+        <div>
+          <div class="eyebrow">Qué es</div>
+          <p class="body" style="font-size: 30px; margin-top: 14px;"><span style="color: var(--accent-2);">Model Context Protocol</span> — un estándar abierto para que cualquier modelo se conecte a herramientas, datos y servicios externos.</p>
+        </div>
+        <div>
+          <div class="eyebrow">Por qué importa</div>
+          <p class="body" style="font-size: 30px; margin-top: 14px;">Lo escribís <span style="color: var(--accent-2);">una vez</span> y funciona en Claude, Cursor, VS Code, cualquier cliente compatible.</p>
+        </div>
+      </div>
+
+      <div class="card" style="background: var(--bg-2); display:flex;flex-direction:column;gap:18px;">
+        <div class="eyebrow" style="margin: 0;">Antes vs ahora</div>
+        <div style="display:flex;align-items:center;gap:24px;">
+          <div class="mark bad">×</div>
+          <div class="body" style="font-size: 26px;">Cada IA necesitaba su integración propia</div>
+        </div>
+        <hr class="hr-soft" />
+        <div style="display:flex;align-items:center;gap:24px;">
+          <div class="mark bad">×</div>
+          <div class="body" style="font-size: 26px;">Código custom por cada herramienta</div>
+        </div>
+        <hr class="hr-soft" />
+        <div style="display:flex;align-items:center;gap:24px;">
+          <div class="mark good">✓</div>
+          <div class="body" style="font-size: 26px;">Un server MCP → <span style="color: var(--accent-2);">todos los clientes</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row" style="margin-top: 40px; gap: 28px;">
+      <div class="card grow" style="padding: 24px 32px;">
+        <div class="mono" style="font-size: 18px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent-2); margin-bottom: 10px;">Ejemplos reales</div>
+        <div class="flow" style="gap: 14px;">
+          <div class="step" style="font-size: 22px; padding: 14px 20px;">Base de datos</div>
+          <div class="step" style="font-size: 22px; padding: 14px 20px;">Slack</div>
+          <div class="step" style="font-size: 22px; padding: 14px 20px;">CI/CD</div>
+          <div class="step" style="font-size: 22px; padding: 14px 20px;">Jira</div>
+          <div class="step" style="font-size: 22px; padding: 14px 20px;">APIs internas</div>
+        </div>
+      </div>
+      <div class="card grow" style="padding: 24px 32px; background: var(--accent-soft); border-color: var(--accent);">
+        <div class="mono" style="font-size: 18px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent-2); margin-bottom: 10px;">La frase</div>
+        <p class="body" style="font-size: 28px; margin: 0;">El dev que sabe armar un MCP server le da <span style="color: var(--accent-2);">superpoderes</span> a toda su organización.</p>
+      </div>
+    </div>
+  </div>
+  <div class="author-chip">RJS · 22 / 24</div>
+</section>
+
+<!-- SLIDE 23 — Skills -->
+<section class="slide" data-label="23 Skills para agentes">
+  <div class="chrome"><div><span class="dot"></span>23 / 24 · ESCALANDO CRITERIO</div><div>SKILLS</div></div>
+  <div class="slide-inner">
+    <div class="eyebrow">Instrucciones reutilizables para agentes</div>
+    <h1 class="title"><span class="accent">Skills</span>: tu criterio, exportable.</h1>
+
+    <p class="subtitle" style="margin-bottom: 44px;">No es un prompt suelto — es una <span style="color: var(--accent-2);">metodología codificada</span> que el agente sigue paso a paso.</p>
+
+    <div class="two-col" style="align-items: stretch;">
+      <div class="card" style="border-color: var(--accent);">
+        <div class="eyebrow">Qué son</div>
+        <p class="body" style="font-size: 28px; margin-top: 14px;">Workflows empaquetados que le dicen al agente <span style="color: var(--accent-2);">cómo</span> hacer algo: TDD, debugging, code review, deploy.</p>
+        <hr class="hr-soft" style="margin: 24px 0;" />
+        <div style="display:flex;align-items:flex-start;gap:20px;">
+          <div class="mark good">✓</div>
+          <p class="body" style="font-size: 26px;">Un junior con buenos skills trabaja con la <span style="color: var(--accent-2);">disciplina de un senior</span>.</p>
+        </div>
+      </div>
+
+      <div class="card" style="padding: 0; overflow: hidden;">
+        <table class="deck-table">
+          <thead>
+            <tr>
+              <th style="width: 40%;">Tipo</th>
+              <th>Ejemplos</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="label" style="color: var(--accent);">Rígido</td>
+              <td style="font-size: 24px;">TDD · Debugging sistemático<br/><span style="color: var(--muted); font-size: 20px;">Se sigue al pie de la letra</span></td>
+            </tr>
+            <tr>
+              <td class="label" style="color: var(--accent);">Flexible</td>
+              <td style="font-size: 24px;">Patrones · Convenciones · Code review<br/><span style="color: var(--muted); font-size: 20px;">Se adapta al contexto</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: 36px; background: var(--accent-soft); border-color: var(--accent); padding: 28px 40px;">
+      <div class="mono" style="font-size: 22px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent-2); margin-bottom: 6px;">El cambio</div>
+      <p class="body" style="font-size: 32px; margin: 0;">Tu experiencia se vuelve <span style="color: var(--accent-2);">exportable</span>. Codificás tu criterio y lo distribuís al equipo.</p>
+    </div>
+  </div>
+  <div class="author-chip">RJS · 23 / 24</div>
+</section>
+
+<!-- SLIDE 24 — Cierre -->
+<section class="slide" data-label="24 Para llevarte hoy">
+  <div class="chrome"><div><span class="dot"></span>24 / 24 · CIERRE</div><div>PARA LLEVARTE HOY</div></div>
+  <div class="slide-inner">
+    <div class="eyebrow">Para llevarte hoy</div>
+    <h1 class="title">Tres ideas <span class="accent">y un Q&amp;A.</span></h1>
+
+    <div class="stack-l" style="gap: 28px; flex: 1;">
+      <div class="card" style="border-left: 6px solid var(--accent); display:flex;gap:32px;align-items:center;">
+        <div class="mono" style="font-size: 36px; color: var(--accent); line-height: 1; min-width: 60px;">01</div>
+        <p class="body" style="font-size: 32px; line-height: 1.3;">Usarla para <span style="color: var(--accent-2);">aprender a pensar</span> — no para dejar de pensar.</p>
+      </div>
+      <div class="card" style="border-left: 6px solid var(--accent); display:flex;gap:32px;align-items:center;">
+        <div class="mono" style="font-size: 36px; color: var(--accent); line-height: 1; min-width: 60px;">02</div>
+        <p class="body" style="font-size: 32px; line-height: 1.3;">La IA es el <span style="color: var(--accent-2);">multiplicador</span>. Vos sos el factor. Si el factor es cero, da cero.</p>
+      </div>
+      <div class="card" style="border-left: 6px solid var(--accent); display:flex;gap:32px;align-items:center;">
+        <div class="mono" style="font-size: 36px; color: var(--accent); line-height: 1; min-width: 60px;">03</div>
+        <p class="body" style="font-size: 32px; line-height: 1.3;">La herramienta más poderosa del mundo no reemplaza al que sabe usarla con <span style="color: var(--accent-2);">criterio</span>.</p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: 36px; background: var(--accent-soft); border-color: var(--accent); padding: 32px 44px; display:flex; align-items: center; gap: 28px;">
+      <div class="demo-banner" style="margin: 0;">
+        <span class="pulse"></span>
+        Q&amp;A · 45 min
+      </div>
+      <p class="body" style="font-size: 30px; margin: 0;">¿Qué querés saber sobre cómo la uso yo en el día a día?</p>
+    </div>
+  </div>
+  <div class="author-chip">RJS · IA EN DESARROLLO · FIN</div>
+</section>
+
+</deck-stage>
+<script src="deck-stage.js"></script>
+<script>
+  // Broadcast slide changes to presenter view
+  const _bc = new BroadcastChannel('deck-presenter');
+  document.querySelector('deck-stage').addEventListener('slidechange', (e) => {
+    _bc.postMessage({ type: 'slidechange', index: e.detail.index, total: e.detail.total });
+  });
+  // Listen for commands from presenter view (prev/next)
+  _bc.addEventListener('message', (e) => {
+    const deck = document.querySelector('deck-stage');
+    if (e.data.type === 'nav-next') deck.next();
+    else if (e.data.type === 'nav-prev') deck.prev();
+    else if (e.data.type === 'nav-goto') deck.goTo(e.data.index);
+    else if (e.data.type === 'request-sync') {
+      _bc.postMessage({ type: 'slidechange', index: deck.index, total: deck.length });
+    }
+  });
+</script>
+</body>
+</html>
